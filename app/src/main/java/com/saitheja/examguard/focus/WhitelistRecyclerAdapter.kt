@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckedTextView
-import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 class WhitelistRecyclerAdapter(
@@ -13,8 +13,24 @@ class WhitelistRecyclerAdapter(
 ) : RecyclerView.Adapter<WhitelistRecyclerAdapter.ViewHolder>() {
 
     fun update(newItems: List<AppInfo>) {
+        val oldItems = items
+        val diff = DiffUtil.calculateDiff(
+            object : DiffUtil.Callback() {
+                override fun getOldListSize(): Int = oldItems.size
+
+                override fun getNewListSize(): Int = newItems.size
+
+                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                    return oldItems[oldItemPosition].packageName == newItems[newItemPosition].packageName
+                }
+
+                override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                    return oldItems[oldItemPosition] == newItems[newItemPosition]
+                }
+            }
+        )
         items = newItems
-        notifyDataSetChanged()
+        diff.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,8 +40,8 @@ class WhitelistRecyclerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.label.text = item.appLabel
         holder.checkedText.isChecked = item.selected
+        holder.checkedText.text = item.appLabel
         holder.itemView.setOnClickListener {
             val next = !holder.checkedText.isChecked
             holder.checkedText.isChecked = next
@@ -36,7 +52,6 @@ class WhitelistRecyclerAdapter(
     override fun getItemCount(): Int = items.size
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val label: TextView = view.findViewById(android.R.id.text1)
         val checkedText: CheckedTextView = view.findViewById(android.R.id.text1)
     }
 }

@@ -2,6 +2,7 @@ package com.saitheja.examguard.report
 
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import com.saitheja.examguard.data.DailyStudyEntity
 import java.io.File
@@ -17,7 +18,7 @@ class PdfReportGenerator {
         val titlePaint = Paint().apply {
             color = Color.BLACK
             textSize = 24f
-            isFakeBoldText = true
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
         val bodyPaint = Paint().apply {
             color = Color.DKGRAY
